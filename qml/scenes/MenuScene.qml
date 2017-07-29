@@ -52,22 +52,6 @@ SceneBase {
     width: 380
   }
 
-  // button opens powered by v-play message and links to the website
-  MouseArea {
-    anchors.top: titleImage.top
-    anchors.bottom: titleImage.bottom
-    anchors.left: titleImage.left
-    anchors.leftMargin: 55
-    anchors.right: titleImage.right
-    anchors.rightMargin: 55
-    width: 240
-    height: 30
-
-    onClicked: {
-      website.visible = true
-    }
-  }
-
   // detailed playerInfo window
   Rectangle {
     id: info
@@ -444,13 +428,6 @@ SceneBase {
       // close community submenu after showing facebook dialog
       communityButton.clicked()
     }
-  }
-
-  WebsiteWindow {
-    id: website
-    visible: false
-    scale: 0.5
-    anchors.centerIn: gameWindowAnchorItem
   }
 
   // connect to the VPlayGameNetwork to handle new inbox entries
