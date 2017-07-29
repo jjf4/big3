@@ -170,7 +170,7 @@ SceneBase {
       anchors.topMargin: 20
       anchors.horizontalCenter: onuButton.horizontalCenter
       onClicked: {
-          gameLogic.endTurn()
+          gameLogic.passTurn()
       }
   }
 
