@@ -149,6 +149,7 @@ SceneBase {
   // the player who clicked the button will be the winner
   // for debug purposes
   ButtonBase {
+    id: closeRoundButton
     text: "Close\nRound"
     width: buttonText.contentWidth + 30
     visible: system.debugBuild && !gameLogic.gameOver
@@ -160,6 +161,19 @@ SceneBase {
       multiplayer.sendMessage(gameLogic.messageEndGame, {userId: multiplayer.localPlayer.userId, test: true})
     }
   }
+
+  ButtonBase {
+      text: "Pass"
+      width: buttonText.contentWidth + 30
+      visible: true
+      anchors.top: closeRoundButton.bottom
+      anchors.topMargin: 20
+      anchors.horizontalCenter: onuButton.horizontalCenter
+      onClicked: {
+          gameLogic.endTurn()
+      }
+  }
+
   ButtonBase {
     text: "Switch Name"
     //width: buttonText.contentWidth + 30
