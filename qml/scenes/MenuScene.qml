@@ -446,27 +446,6 @@ SceneBase {
     }
   }
 
-  LikeWindow {
-    id: like
-    visible: false
-    scale: 0.5
-    anchors.centerIn: gameWindowAnchorItem
-  }
-
-  RatingWindow {
-    id: rating
-    visible: false
-    scale: 0.5
-    anchors.centerIn: gameWindowAnchorItem
-  }
-
-  FeedbackWindow {
-    id: feedback
-    visible: false
-    scale: 0.5
-    anchors.centerIn: gameWindowAnchorItem
-  }
-
   WebsiteWindow {
     id: website
     visible: false
