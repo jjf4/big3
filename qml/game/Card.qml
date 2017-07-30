@@ -15,8 +15,9 @@ EntityBase {
   property int originalHeight: 134
 
   // these properties are different for every card type
-  variationType: "ace"
+  variationType: "ace-of-spades"
   property int points: 50
+  property string cardNumber: "ace"
   property string cardColor: "black"
   property int order
   property string cardSuit: "spades"
@@ -183,7 +184,7 @@ EntityBase {
         card.hue = 150/360
         card.saturation = 0
       }
-      cardImage.source = "../../assets/img/cards/" + variationType + "_of_" + cardSuit + ".png"
+      cardImage.source = "../../assets/img/cards/" + cardNumber + "_of_" + cardSuit + ".png"
     }
   }
 }

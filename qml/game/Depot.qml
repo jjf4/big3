@@ -111,13 +111,7 @@ Item {
 
   // check if the card has an effect for the next player
   function hasEffect(){
-    if (current.variationType === "skip" ||
-        current.variationType === "draw2" ||
-        current.variationType === "wild4"){
-      return true
-    }else{
-      return false
-    }
+    return false
   }
 
   // check if the selected card matches with the current reference card
@@ -130,29 +124,20 @@ Item {
     }
     var card = entityManager.getEntityById(cardId)
 
-    // draw2 and wild4 cards can only be matched by other cards of the same type
-    if (effect && current.variationType === "draw2" && card.variationType !== "draw2") return false
-    if (effect && current.variationType === "wild4" && card.variationType !== "wild4") return false
     // the card is valid if it is the same color or type as the current reference card
-    if ((card.cardSuit === current.cardSuit) && (deck.types.indexOf(card.variationType) > deck.types.indexOf(current.variationType))) return true
-    if ((card.variationType === current.variationType) && (deck.cardSuit.indexOf(card.cardSuit) > deck.cardSuit.indexOf(current.cardSuit))) return true
+    if ((card.cardSuit === current.cardSuit) && (deck.types.indexOf(card.cardNumber) > deck.types.indexOf(current.cardNumber))) return true
+    if ((card.cardNumber === current.cardNumber) && (deck.cardSuit.indexOf(card.cardSuit) > deck.cardSuit.indexOf(current.cardSuit))) return true
     if (gameLogic.numPass >= 3) return true
     // the card matches if either the selected or current reference cards are black
   }
 
   // play a card effect depending on the card type
   function cardEffect(){
-    if (effect){
-      if (current && current.variationType === "skip") {
-        skip()
-      }
-    } else {
-      // reset the card effects if they are not active
-      skipped = false
-      depot.drawAmount = 1
-      var userId = multiplayer.activePlayer ? multiplayer.activePlayer.userId : 0
-      multiplayer.sendMessage(gameLogic.messageSetDrawAmount, {amount: 1, userId: userId})
-    }
+    // reset the card effects if they are not active
+    skipped = false
+    depot.drawAmount = 1
+    var userId = multiplayer.activePlayer ? multiplayer.activePlayer.userId : 0
+    multiplayer.sendMessage(gameLogic.messageSetDrawAmount, {amount: 1, userId: userId})
   }
 
   // skip the current player by playing a sound, setting the skipped variable and starting the skip timer

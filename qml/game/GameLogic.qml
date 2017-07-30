@@ -21,6 +21,7 @@ id: gameLogic
         property bool cardsDrawn: false
         property bool acted: false
         property bool gameOver: false
+        property bool firstTurn: false
 
         property int messageSyncGameState: 0
         property int messageRequestGameState: 1
@@ -30,7 +31,6 @@ id: gameLogic
         property int messageSetSkipped: 5
         property int messageSetReverse: 6
         property int messageSetDrawAmount: 7
-        property int messagePickColor: 8
         property int messagePressONU: 9
         property int messageEndGame: 10 // we could replace this custom message with the new endGame() function from multiplayer, custom end game message was sent before this functionality existed
         property int messagePrintChat: 11
@@ -260,18 +260,6 @@ onMessageReceived: {
 
                            depot.drawAmount = message.amount
                        }
-                       // wild color picked
-                       else if (code == messagePickColor){
-                           // if the message wasn't sent by the leader and
-                           // if it wasn't sent by the active player, the message is invalid
-                           // the message was probably sent after the leader triggered the next turn
-                           if (multiplayer.leaderPlayer.userId != message.userId &&
-                                   multiplayer.activePlayer && multiplayer.activePlayer.userId != message.userId){
-                               return
-                           }
-
-                           pickColor(message.color)
-                       }
                        // someone pressed onu
                        else if (code == messagePressONU){
                            var playerHand = getHand(message.userId)
@@ -382,40 +370,17 @@ onCardSelected: {
                                 flurry.logEvent("User.CardSelected", "singlePlayer", multiplayer.singlePlayer)
 
                                     if (depot.validCard(cardId)){
-                                        // the user can act only once unless the selected card was a wild card
-                                        // this allows the user to chose a color as well
-                                        var currentType = entityManager.getEntityById(cardId).variationType
-                                            if (currentType !== "wild" && currentType !== "wild4") acted = true
+                                        acted = true
+                                        depositCard(cardId, multiplayer.localPlayer.userId)
+                                            multiplayer.sendMessage(messageMoveCardsDepot, {cardId: cardId, userId: multiplayer.localPlayer.userId})
 
-                                                depositCard(cardId, multiplayer.localPlayer.userId)
-                                                    multiplayer.sendMessage(messageMoveCardsDepot, {cardId: cardId, userId: multiplayer.localPlayer.userId})
-
-                                                    // the active player increases the drawAmount after playing a draw2 or wild4 card
-                                                    if (depot.current.variationType === "draw2") depot.draw(2)
-                                                        if (depot.current.variationType === "wild4") depot.draw(4)
-
-                                                            // end the turn unless the connected player has to pick a color
-                                                            if (depot.current.cardColor !== "yellow" && multiplayer.myTurn){
-                                                                endTurn()
-                                                            }
+                                        if (multiplayer.myTurn){
+                                            endTurn()
+                                        }
                                     }
                             }
                         }
                 }
-
-                // the player selected a color
-onColorPicked: {
-                   if (multiplayer.myTurn && !acted){
-                       acted = true
-                           colorSound.play()
-                           pickColor(pickedColor)
-                           multiplayer.sendMessage(messagePickColor, {color: pickedColor, userId: multiplayer.localPlayer.userId})
-                           endTurn()
-                           // not relevant for google analytics, causes to exceed the free limit
-                           //ga.logEvent("User", "Color Picked", "singlePlayer", multiplayer.singlePlayer)
-                           flurry.logEvent("User.ColorPicked", "singlePlayer", multiplayer.singlePlayer)
-                   }
-               }
     }
 
     // sync deck with leader and set up the game
@@ -440,6 +405,7 @@ onColorPicked: {
 
     // deposit the selected card
     function depositCard(cardId, userId){
+        console.debug("cardId " + cardId)
         numPass = 0
         // unmark all highlighted cards
         unmark()
@@ -453,31 +419,6 @@ onColorPicked: {
                     playerHands.children[i].removeFromHand(cardId)
                         depot.depositCard(cardId)
 
-                        if (depot.current.variationType === "reverse"){
-                            multiplayer.leaderCode(function() {
-                                    depot.reverse()
-                                    })
-                        }
-
-                    // if the card was a wild or wild4 card
-                    if (depot.current.cardColor === "black"){
-                        // show the colorPicker for the active connected player
-                        if (multiplayer.activePlayer && multiplayer.activePlayer.connected && remainingTime > 0){
-                            if (multiplayer.myTurn){
-                                colorPicker.visible = true
-                            }
-                            colorPicker.chosingColor = true
-                        }else{
-                            // leader choses a random color for disconnected players
-                            multiplayer.leaderCode(function() {
-                                    if (!multiplayer.activePlayer || !multiplayer.activePlayer.connected) {
-                                    var color = colorPicker.randomColor()
-                                    pickColor(color)
-                                    multiplayer.sendMessage(messagePickColor, {color: color, userId: userId})
-                                    }
-                                    })
-                        }
-                    }
                     // uncover the card for disconnected players after chosing the color
                     if (!multiplayer.activePlayer || !multiplayer.activePlayer.connected){
                         depot.current.hidden = false
@@ -652,6 +593,8 @@ onColorPicked: {
 
                             // reset all values at the start of the game
                             gameOver = false
+                            firstTurn = true
+                            numPass = 0
                             timer.start()
                             scaleHand()
                             markValid()
@@ -690,7 +633,8 @@ onColorPicked: {
 
                                     // only the leader needs to call this
                                     // lets always the leader take the first turn, otherwise the same player that ended the game before would be the first to make a turn
-                                    gameLogic.triggerNewTurn(multiplayer.leaderPlayer.userId)
+                                    gameLogic.triggerFirstTurn()
+                                    //gameLogic.triggerNewTurn(multiplayer.leaderPlayer.userId)
                                     })
 
                         // start by scaling the playerHand of the active localPlayer
@@ -884,15 +828,6 @@ onColorPicked: {
                             }
                     }
 
-                    // change the current depot wild or wild4 card to the selected color and update the image
-                    function pickColor(pickedColor){
-                        if ((depot.current.variationType === "wild4" || depot.current.variationType === "wild")
-                                && depot.current.cardColor === "black"){
-                            depot.current.cardColor = pickedColor
-                                depot.current.updateCardImage()
-                        }
-                    }
-
                     // check if the active player is close to winning (2 or less cards in the hand)
                     function closeToWin(){
                         for (var i = 0; i < playerHands.children.length; i++) {
@@ -975,6 +910,14 @@ onColorPicked: {
                         } else {
                             // send message to leader to trigger new turn
                             multiplayer.sendMessage(messageTriggerTurn, userId)
+                        }
+                    }
+
+                    function triggerFirstTurn(){
+                        for (var i = 0; i < playerHands.children.length; i++) {
+                            if (playerHands.children[i].isStartingHand()) {
+                                triggerNewTurn(playerHands.children[i].player.userId)
+                            }
                         }
                     }
 

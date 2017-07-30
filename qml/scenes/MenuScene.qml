@@ -17,7 +17,7 @@ SceneBase {
 
   // background music
   BackgroundMusic {
-    volume: 0.20
+    volume: 0 //0.20
     id: ambienceMusic
     source: "../../assets/snd/bg.mp3"
   }

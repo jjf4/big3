@@ -187,6 +187,15 @@ Item {
     return false
   }
 
+  function isStartingHand(){
+    for (var i = 0; i < hand.length; i ++){
+      if(hand[i].entityId.indexOf("4-of-diamonds") !== -1){
+        return true
+      }
+    }
+    return false
+  }
+
   // remove card with a specific id from hand
   function removeFromHand(cardId){
     for (var i = 0; i < hand.length; i ++){

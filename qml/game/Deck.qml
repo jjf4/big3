@@ -53,13 +53,13 @@ Item {
     // create yellow, green, red and blue colored cards
     for (var i = 0; i < 4; i ++){
       // one ace card per color
-      card = {variationType: types[0], cardColor: cardColor[i % 2], cardSuit: cardSuit[i], points: 5, hidden: true, order: order}
+      card = {variationType: types[0] + "-of-" + cardSuit[i], cardNumber: types[0], cardColor: cardColor[i % 2], cardSuit: cardSuit[i], points: 5, hidden: true, order: order}
       cardInfo.push(card)
       order ++
 
       // one 1-9 value cards per color
       for (var j = 1; j <= 12; j ++){
-          card = {variationType: types[j], cardColor: cardColor[i % 2], cardSuit: cardSuit[i], points: 5, hidden: true, order: order}
+          card = {variationType: types[j] + "-of-" + cardSuit[i], cardNumber: types[j], cardColor: cardColor[i % 2], cardSuit: cardSuit[i], points: 5, hidden: true, order: order}
           cardInfo.push(card)
           order ++
       }
@@ -75,6 +75,7 @@ Item {
       id = entityManager.createEntityFromUrlWithProperties(
             Qt.resolvedUrl("Card.qml"), {
               "variationType": cardInfo[i].variationType,
+              "cardNumber": cardInfo[i].cardNumber,
               "cardColor": cardInfo[i].cardColor,
               "points": cardInfo[i].points,
               "order": cardInfo[i].order,
