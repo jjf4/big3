@@ -45,7 +45,7 @@ Item {
       var userId = multiplayer.activePlayer ? multiplayer.activePlayer.userId : 0
       multiplayer.sendMessage(gameLogic.messageSetSkipped, {skipped: false, userId: userId})
       console.debug("<<<< Trigger new turn after effect, clockwise: " + clockwise)
-      gameLogic.triggerNewTurn()
+      gameLogic.passTurn()
     }
   }
 
@@ -136,6 +136,7 @@ Item {
     // the card is valid if it is the same color or type as the current reference card
     if ((card.cardSuit === current.cardSuit) && (deck.types.indexOf(card.variationType) > deck.types.indexOf(current.variationType))) return true
     if ((card.variationType === current.variationType) && (deck.cardSuit.indexOf(card.cardSuit) > deck.cardSuit.indexOf(current.cardSuit))) return true
+    if (gameLogic.numPass >= 3) return true
     // the card matches if either the selected or current reference cards are black
   }
 

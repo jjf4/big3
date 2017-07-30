@@ -217,7 +217,6 @@ Item {
       // mark the stack if there are no valid cards in hand
       var validId = randomValidId()
       if(validId == null){
-        deck.markStack()
       }
     }
   }

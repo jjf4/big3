@@ -149,7 +149,6 @@ Item {
   // get the id of the card on top of the stack
   function getTopCardId(){
     // create a new stack from depot cards if there's no card left to draw
-    reStack()
     var index = Math.max(cardDeck.length - (cardDeck.length - cardsInStack) - 1, 0)
     return deck.cardDeck[index].entityId
   }
@@ -161,51 +160,6 @@ Item {
         cardDeck[i].y = i * (-0.1)
       }
     }
-  }
-
-  // mark the stack if there are no other valid card options
-  function markStack(){
-    if (cardDeck.length <= 0) return
-    var card = entityManager.getEntityById(getTopCardId())
-    card.glowImage.visible = true
-  }
-
-  // unmark the stack
-  function unmark(){
-    if (cardDeck.length <= 0) return
-    var card = entityManager.getEntityById(getTopCardId())
-    card.glowImage.visible = false
-  }
-
-  // move the old depot cards to the stack if there are no cards left to draw
-  function reStack(){
-    var cardIds = []
-    if (cardsInStack <= 1){
-      // find all old depot cards
-      for (var i = 0; i < cardDeck.length; i ++){
-        if (cardDeck[i].state === "depot" && cardDeck[i].entityId !== depot.current.entityId){
-          cardIds.push(cardDeck[i].entityId)
-        }
-      }
-      // reparent and hide the cards and move them to the beginning of the cardDeck array
-      for (var j = 0; j < cardIds.length; j++) {
-        for (var k = 0; k < cardDeck.length; k ++){
-          if (cardDeck[k].entityId == cardIds[j]){
-            if(cardDeck[k].variationType == "wild" || cardDeck[k].variationType == "wild4"){
-              cardDeck[k].cardColor = "black"
-            }
-            cardDeck[k].hidden = true
-            cardDeck[k].newParent = deck
-            cardDeck[k].state = "stack"
-            moveElement(k, 0)
-            cardsInStack ++
-            break
-          }
-        }
-      }
-    }
-    // reposition the new cards to create a stack
-    offsetStack()
   }
 
   // move the stack cards to the beginning of the cardDeck array

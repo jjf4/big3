@@ -16,7 +16,7 @@ id: gameLogic
         property int aiTurnTime: 600
         // restart the game at the end after a few seconds
         property int restartTime: 8000
-        property int numPass: 3
+        property int numPass: 0
         // whether the user has already drawn cards this turn or not
         property bool cardsDrawn: false
         property bool acted: false
@@ -24,7 +24,7 @@ id: gameLogic
 
         property int messageSyncGameState: 0
         property int messageRequestGameState: 1
-        property int messageMoveCardsHand: 2
+        property int messagePassTurn: 2
         property int messageMoveCardsDepot: 3
         property int messageSetEffect: 4
         property int messageSetSkipped: 5
@@ -188,7 +188,7 @@ onMessageReceived: {
                                    })
                        }
                        // move card to hand
-                       else if (code == messageMoveCardsHand){
+                       else if (code == messagePassTurn){
                            // if there is an active player with a different userId, the message is invalid
                            // the message was probably sent after the leader triggered the next turn
                            if (multiplayer.activePlayer && multiplayer.activePlayer.userId != message.userId){
@@ -198,7 +198,7 @@ onMessageReceived: {
                                return
                            }
 
-                           getCards(message.cards, message.userId)
+                           passTurn()
                        }
                        // move card to depot
                        else if (code == messageMoveCardsDepot){
@@ -210,7 +210,6 @@ onMessageReceived: {
                                        })
                                return
                            }
-                           numPass = 0
                                depositCard(message.cardId, message.userId)
                        }
                        // lasting card effect
@@ -345,8 +344,7 @@ target: gameScene
                     }
 
                     var userId = multiplayer.activePlayer ? multiplayer.activePlayer.userId : 0
-                        getCards(depot.drawAmount, userId)
-                        multiplayer.sendMessage(messageMoveCardsHand, {cards: depot.drawAmount, userId: userId})
+                        multiplayer.sendMessage(messagePassTurn, {userId: userId})
 
                         if (acted || !hasValidCards(multiplayer.localPlayer)){
                             acted = true
@@ -442,6 +440,7 @@ onColorPicked: {
 
     // deposit the selected card
     function depositCard(cardId, userId){
+        numPass = 0
         // unmark all highlighted cards
         unmark()
             // scale down the active localPlayer playerHand
@@ -510,8 +509,8 @@ onColorPicked: {
                                 if (depot.current.variationType === "wild4") depot.draw(4)
                                     // let the ai only draw cards if the user hasn't already done it
                     } else {
-                        getCards(depot.drawAmount, userId)
-                            multiplayer.sendMessage(messageMoveCardsHand, {cards: depot.drawAmount, userId: userId})
+                        numPass++
+                        multiplayer.sendMessage(messagePassTurn, {userId: userId})
                     }
             }
         }
@@ -539,6 +538,7 @@ onColorPicked: {
     // start the turn for the active player
     function turnStarted(playerId) {
         console.debug("turnStarted() called")
+        console.debug(numPass)
 
             if(!multiplayer.activePlayer) {
                 console.debug("ERROR: activePlayer not valid in turnStarted!")
@@ -884,18 +884,6 @@ onColorPicked: {
                             }
                     }
 
-                    // draw the specified amount of cards
-                    function getCards(cards, userId){
-                        cardsDrawn = true
-
-                            // find the playerHand of the active player and pick up cards
-                            for (var i = 0; i < playerHands.children.length; i++) {
-                                if (playerHands.children[i].player.userId === userId){
-                                    playerHands.children[i].pickUpCards(cards)
-                                }
-                            }
-                    }
-
                     // change the current depot wild or wild4 card to the selected color and update the image
                     function pickColor(pickedColor){
                         if ((depot.current.variationType === "wild4" || depot.current.variationType === "wild")
@@ -932,8 +920,6 @@ onColorPicked: {
                         for (var i = 0; i < playerHands.children.length; i++) {
                             playerHands.children[i].unmark()
                         }
-                        // unmark the highlighted deck card
-                        deck.unmark()
                     }
 
                     // scale the playerHand of the active localPlayer
@@ -959,8 +945,7 @@ onColorPicked: {
                                     multiplayer.sendMessage(messageEndGame, {userId: userId})
                                 // make the player pick up two cards if he forgot to press the active onu button
                                 } else if (playerHands.children[i].missedOnu()){
-                                    getCards(2, userId)
-                                        multiplayer.sendMessage(messageMoveCardsHand, {cards: 2, userId: userId})
+                                        multiplayer.sendMessage(messagePassTurn, {userId: userId})
                                         if (multiplayer.myTurn) onuHint.visible = true
                                 }
                             }
