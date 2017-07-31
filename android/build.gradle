@@ -20,9 +20,6 @@ apply plugin: 'com.android.application'
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     // V-Play Plugins
-    compile 'net.vplay.plugins:plugin-facebook:2.+'
-    compile 'net.vplay.plugins:plugin-onesignal:2.+'
-    compile 'net.vplay.plugins:plugin-flurry:2.+'
     compile 'net.vplay.plugins:plugin-admob:2.+'
     compile 'net.vplay.plugins:plugin-chartboost:2.+'
     compile 'net.vplay.plugins:plugin-soomla:2.+'

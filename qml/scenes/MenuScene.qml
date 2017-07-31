@@ -111,8 +111,6 @@ SceneBase {
     anchors.rightMargin: 5
     visible: info.visible
     onClicked: {
-      ga.logEvent("User", "Profile")
-      flurry.logEvent("User.Profile")
     }
   }
 
@@ -172,8 +170,6 @@ SceneBase {
 
     infoButton.enabled: player.name != ""
     infoButton.onClicked: {
-      ga.logEvent("User", "Own Player Details")
-      flurry.logEvent("User.OwnPlayerDetails")
       info.visible ^= true
     }
   }
@@ -203,8 +199,6 @@ SceneBase {
       text: "Quick Game"
       action: "quick"
       onClicked: {
-        ga.logEvent("User", "Quick Game")
-        flurry.logEvent("User.Quick Game")
       }
     }
 
@@ -212,8 +206,6 @@ SceneBase {
       anchors.horizontalCenter: parent.horizontalCenter
       text: "Matchmaking"
       onClicked: {
-        ga.logEvent("User", "Matchmaking")
-        flurry.logEvent("User.Matchmaking")
       }
     }
 
@@ -223,8 +215,6 @@ SceneBase {
       action: "single"
       //visible: false
       onClicked: {
-        ga.logEvent("User", "Single Game")
-        flurry.logEvent("User.Single Game")
       }
     }
   }
@@ -263,8 +253,6 @@ SceneBase {
       onClicked: {
         hidden = !hidden
         slideMenu()
-        ga.logEvent("User", "Community Menu")
-        flurry.logEvent("User.Community Menu")
       }
 
       // slides the community menu in or out depending on the hidden
@@ -288,26 +276,8 @@ SceneBase {
       anchors.margins: communityButton.anchors.margins
       buttonImage.source: "../../assets/img/Friends.png"
       onClicked: {
-        ga.logEvent("User", "Friends")
-        flurry.logEvent("User.Friends")
       }
       opacity: communityButton.hidden ? 0 : 1
-    }
-
-    // button to connect with facebook
-    ButtonBase {
-      color: "transparent"
-      width: communityButton.width
-      height: communityButton.height
-      anchors.margins: communityButton.anchors.margins
-      buttonImage.source: "../../assets/img/Facebook.png"
-      visible: !system.desktopPlatform && !gameNetwork.facebookConnectionSuccessful
-
-      onClicked: {
-        ga.logEvent("User", "Show Facebook")
-        flurry.logEvent("User.ShowFacebook")
-        connectFacebook.visible ^= true
-      }
     }
 
     // button to share the game
@@ -320,8 +290,6 @@ SceneBase {
       visible: !system.desktopPlatform
 
       onClicked: {
-        ga.logEvent("User", "Share")
-        flurry.logEvent("User.Share")
         nativeUtils.share("Come and play " + gameTitle + " with me, the best multiplayer card game! My player name is " + gameNetwork.displayName, "https://v-play.net/one-download/")
       }
     }
@@ -339,8 +307,6 @@ SceneBase {
         buttonImage.source: "../../assets/img/Music.png"
         opacity: settings.musicEnabled ? 1.0 :  0.6
         onClicked: {
-          ga.logEvent("User", "Music")
-          flurry.logEvent("User.Music")
           settings.musicEnabled ^= true
         }
       }
@@ -354,8 +320,6 @@ SceneBase {
         buttonImage.source: "../../assets/img/Sound.png"
         opacity: settings.soundEnabled ? 1.0 :  0.6
         onClicked: {
-          ga.logEvent("User", "Sound")
-          flurry.logEvent("User.Sound")
           settings.soundEnabled ^= true
         }
       }
@@ -400,8 +364,6 @@ SceneBase {
       anchors.margins: communityButton.anchors.margins
       buttonImage.source: "../../assets/img/Messages.png"
       onClicked: {
-        ga.logEvent("User", "Messages")
-        flurry.logEvent("User.Messages")
       }
     }
 
@@ -413,20 +375,7 @@ SceneBase {
       anchors.margins: communityButton.anchors.margins
       buttonImage.source: "../../assets/img/Network.png"
       onClicked: {
-        ga.logEvent("User", "Network")
-        flurry.logEvent("User.Network")
       }
-    }
-  }
-
-  ConnectFacebookWindow {
-    id: connectFacebook
-    visible: false
-    scale: 0.5
-    anchors.centerIn: gameWindowAnchorItem
-    onConnectFacebookClicked: {
-      // close community submenu after showing facebook dialog
-      communityButton.clicked()
     }
   }
 
@@ -504,16 +453,12 @@ SceneBase {
   // sync messages on the main menu page
   onVisibleChanged: {
     if(visible){
-      ga.logScreen("MenuScene")
-      flurry.logEvent("Screen.MenuScene")
       gameNetwork.api.inbox()
       gameNetwork.sync()
     }
   }
 
   function showFeedback(){
-    ga.logEvent("User", "Show Feedback Dialog")
-    flurry.logEvent("User.ShowFeedbackDialog")
     like.visible = true
   }
 

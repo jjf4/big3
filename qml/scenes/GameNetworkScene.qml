@@ -21,8 +21,6 @@ SceneBase {
 
   onVisibleChanged: {
     if(visible) {
-      ga.logScreen("GameNetworkScene")
-      flurry.logEvent("Screen.GameNetworkScene")
     }
   }
 }

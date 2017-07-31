@@ -10,9 +10,9 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 	
     // Add this line to match your application identifier:
-    app.setOrganizationDomain("net.vplay.demos.ONE");
+    app.setOrganizationDomain("com.peepsico.big3");
     // Set your app's current version number here:
-    app.setApplicationVersion("2.6");
+    app.setApplicationVersion("1.0");
 
     VPApplication vplay;
 

@@ -12,8 +12,6 @@ EntityBase {
   property string activeColor: "#f9c336"
   property string inactiveColor: "#28a3c1"
 
-  // set the image if the player is connected to facebook
-  property string facebookImage: ""
   property alias canvas: canvas
   property alias avatar: avatar
   property alias avatarSource: avatar.source
@@ -159,8 +157,6 @@ EntityBase {
     anchors.fill: parent
     enabled: player && player.connected ? true: false
     onClicked: {
-      ga.logEvent("User", "Show PlayerInfo")
-      flurry.logEvent("User.ShowPlayerInfo")
       gameScene.playerInfoPopup.visible = true
       gameScene.playerInfoPopup.refTag = playerTag
     }
@@ -180,7 +176,6 @@ EntityBase {
     canvas.requestPaint()
   }
 
-  // set the facebook avatar and level for the local player and signal the change to the other players
   /*
      Explanation for sendToOthers:
      This function is used in two cases:

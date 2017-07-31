@@ -24,8 +24,6 @@ SceneBase {
 
   onVisibleChanged: {
     if(visible) {
-      ga.logScreen("MultiplayerScene")
-      flurry.logEvent("Screen.MultiplayerScene")
     }
   }
 

@@ -1,8 +1,8 @@
 {
     "title": "One",
-    "identifier": "net.vplay.demos.ONE",
+    "identifier": "com.peepsico.big3",
     "orientation": "landscape",
-    "versioncode": 26,
-    "versionname": "2.6",
+    "versioncode": 1,
+    "versionname": "1.0",
     "stage": "test"
 }

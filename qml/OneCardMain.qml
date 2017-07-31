@@ -16,7 +16,7 @@ GameWindow {
   width: 960
 
   // generate your own license key which includes the OneSignal Push Notification plugin & the Facebook plugin at https://v-play.net/licenseKey
-  // licenseKey: Constants.licenseKey
+  licenseKey: Constants.licenseKey
   title: gameNetwork.user.deviceId + " - " + gameNetwork.user.name
 
   // this is used in the sharing dialog, rating dialog
@@ -85,7 +85,6 @@ GameWindow {
     gameId: Constants.gameId
     secret: Constants.gameSecret
     user.deviceId: generateDeviceId()
-    facebookItem: facebook
 
     property int counterAppInstances: 0
 
@@ -141,23 +140,6 @@ GameWindow {
       }
       window.state = "game"
     }
-  }
-
-  Facebook {
-    id: facebook
-    // appId: Constants.fbAppId
-    readPermissions: [ "email", "user_friends" ]
-    publishPermissions: ["publish_actions"]
-  }
-
-  GoogleAnalytics {
-    id: ga
-    // propertyId: Constants.gaPropertyId
-  }
-
-  Flurry {
-    id: flurry
-    // apiKey: Constants.flurryApiKey
   }
 
   // loadingScene is our first scene, so set the state to menu initially
